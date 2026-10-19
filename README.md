@@ -2,7 +2,6 @@
 
 An open-source, modern personal finance and expenses tracker frontend built with **Vue.js 3 (Options API)** and designed with **Google Material Design 3 (Material You)** principles.
 
-Developed and maintained by **[Yasser Elgammal](https://github.com/yasserelgammal)**.
 
 This frontend was built for the **[Expenses Tracker backend API](https://github.com/YasserElgammal/expenses-tracker)**. Together, they provide a complete personal finance system for authentication, category management, income and expense tracking, pagination, and monthly financial insights.
 
@@ -14,23 +13,23 @@ The Laravel backend, API documentation, and server-side setup instructions are a
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 - **Material You (M3) Design System:** Authentic tonal palettes, flat surfaces, clean typography (Roboto / Inter), and no CSS gradients.
 - **Vue.js Options API Strictly:** Fully structured using `data()`, `computed`, `methods`, and lifecycle hooks.
 - **Laravel Sanctum Auth Integration:** Bearer token authentication with automatic request injection and 401 redirect handling.
-- **Live Net Savings & Analytics:** Real-time monthly breakdown of total income, expenditures, and net savings.
+- **Monthly Financial Analytics:** Clear insights into monthly income, expenses, and net savings.
 - **Smart Amount Management:** Automatically signs expenses as negative and income as positive according to backend rules.
 - **Numbered Pagination with Ellipsis:** Intuitive navigation (`1 ... 5 6 7 ... 20`) for high-volume ledgers.
 - **Optimized Performance:** Centralized design system reducing repetitive CSS by over 40%.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yasserelgammal/expenses.git
+git clone https://github.com/yasserelgammal/expenses-tracker-vue.git
 cd expenses
 ```
 
@@ -65,7 +64,7 @@ npm run build
 
 ---
 
-## 👤 Author
+## Author
 
 **Yasser Elgammal**
 - GitHub: [@yasserelgammal](https://github.com/yasserelgammal)
