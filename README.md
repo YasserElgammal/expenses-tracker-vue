@@ -4,6 +4,14 @@ An open-source, modern personal finance and expenses tracker frontend built with
 
 Developed and maintained by **[Yasser Elgammal](https://github.com/yasserelgammal)**.
 
+This frontend was built for the **[Expenses Tracker backend API](https://github.com/YasserElgammal/expenses-tracker)**. Together, they provide a complete personal finance system for authentication, category management, income and expense tracking, pagination, and monthly financial insights.
+
+## Backend API
+
+The Laravel backend, API documentation, and server-side setup instructions are available at:
+
+**[YasserElgammal/expenses-tracker](https://github.com/YasserElgammal/expenses-tracker)**
+
 ---
 
 ## 🌟 Key Features
