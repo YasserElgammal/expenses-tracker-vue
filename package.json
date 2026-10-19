@@ -1,15 +1,21 @@
 {
-  "name": "expenses",
+  "name": "expenses-tracker",
   "version": "0.1.0",
-  "private": true,
+  "description": "Open-source Expenses Tracker Frontend built with Vue.js Options API and Google Material 3",
+  "author": "Yasser Elgammal (https://github.com/yasserelgammal)",
+  "homepage": "https://github.com/yasserelgammal",
+  "license": "MIT",
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^1.20.0",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
