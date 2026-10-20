@@ -30,7 +30,7 @@ The Laravel backend, API documentation, and server-side setup instructions are a
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/yasserelgammal/expenses-tracker-vue.git
-cd expenses
+cd expenses-tracker-vue
 ```
 
 ### 2. Install dependencies
