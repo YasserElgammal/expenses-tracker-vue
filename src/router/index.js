@@ -5,6 +5,7 @@ import RegisterView from '@/pages/RegisterView.vue';
 import DashboardView from '@/pages/DashboardView.vue';
 import TransactionsView from '@/pages/TransactionsView.vue';
 import CategoriesView from '@/pages/CategoriesView.vue';
+import StatisticsView from '@/pages/StatisticsView.vue';
 import NotFound from '@/pages/NotFound.vue';
 
 const routes = [
@@ -41,6 +42,12 @@ const routes = [
     path: '/categories',
     name: 'categories',
     component: CategoriesView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/statistics',
+    name: 'statistics',
+    component: StatisticsView,
     meta: { requiresAuth: true },
   },
   {

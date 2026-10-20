@@ -19,4 +19,12 @@ export default {
   getStatistics(params) {
     return api.get('/transactions/statistics', { params });
   },
+  getFinancialSummary(month, year) {
+    return api.get('/transactions/financial-summary', {
+      params: {
+        ...(month ? { month } : {}),
+        ...(year ? { year } : {}),
+      },
+    });
+  },
 };

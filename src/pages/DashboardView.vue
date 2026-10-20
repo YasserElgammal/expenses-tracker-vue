@@ -30,6 +30,62 @@
       <button class="md-banner-close" @click="toastMessage = ''" aria-label="Close">&times;</button>
     </div>
 
+    <form class="md-card summary-filter" :class="{ expanded: showSummaryFilter }" @submit.prevent="applySummaryFilter">
+      <div class="filter-header">
+        <div class="filter-heading">
+          <h2 class="filter-title">Financial Summary</h2>
+          <p class="filter-subtitle">{{ summaryPeriodLabel }}</p>
+        </div>
+        <button
+          type="button"
+          class="md-btn md-btn-tonal filter-toggle"
+          :aria-expanded="showSummaryFilter"
+          aria-controls="summary-filter-controls"
+          @click="showSummaryFilter = !showSummaryFilter"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 5h16M7 12h10M10 19h4"/>
+          </svg>
+          <span>{{ showSummaryFilter ? 'Hide Filters' : 'Show Filters' }}</span>
+        </button>
+      </div>
+
+      <div v-show="showSummaryFilter" id="summary-filter-controls" class="filter-controls">
+        <div class="filter-field">
+          <label for="summary-month" class="md-label">Month</label>
+          <select id="summary-month" v-model="summaryMonth" class="md-select">
+            <option value="">Current month</option>
+            <option v-for="month in months" :key="month.value" :value="month.value">
+              {{ month.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="summary-year" class="md-label">Year</label>
+          <input
+            id="summary-year"
+            v-model="summaryYear"
+            class="md-input"
+            type="number"
+            min="2000"
+            :max="maxFilterYear"
+            placeholder="Current year"
+          />
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="md-btn md-btn-text" :disabled="loadingStats" @click="resetSummaryFilter">
+            Reset
+          </button>
+          <button type="submit" class="md-btn md-btn-filled" :disabled="loadingStats">
+            <span v-if="loadingStats" class="md-spinner"></span>
+            <span>{{ loadingStats ? 'Loading...' : 'Apply Filter' }}</span>
+          </button>
+        </div>
+      </div>
+    </form>
+
     <!-- Metric Stat Cards (M3 Elevated Surfaces) -->
     <div class="stats-grid">
       <!-- Income Card -->
@@ -46,7 +102,7 @@
         <div class="stat-value text-income">
           {{ formatCurrency(currentStats.month_income_total || 0, true) }}
         </div>
-        <span class="stat-period">{{ currentStats.month_year || 'Current Month' }}</span>
+        <span class="stat-period">{{ summaryPeriodLabel }}</span>
       </div>
 
       <!-- Expense Card -->
@@ -63,7 +119,7 @@
         <div class="stat-value text-expense">
           {{ formatCurrency(currentStats.month_expense_total || 0, true) }}
         </div>
-        <span class="stat-period">{{ currentStats.month_year || 'Current Month' }}</span>
+        <span class="stat-period">{{ summaryPeriodLabel }}</span>
       </div>
 
       <!-- Savings Card -->
@@ -80,40 +136,7 @@
         <div class="stat-value" :class="parseNumericValue(currentStats.month_saving_total) >= 0 ? 'text-income' : 'text-expense'">
           {{ formatCurrency(currentStats.month_saving_total || 0, true) }}
         </div>
-        <span class="stat-period">{{ currentStats.month_year || 'Current Month' }}</span>
-      </div>
-    </div>
-
-    <!-- Monthly Statistics History Breakdown -->
-    <div class="md-card section-card" v-if="statisticsList.length > 1">
-      <div class="md-card-header">
-        <div>
-          <h2 class="section-title">Monthly Performance</h2>
-          <p class="section-subtitle">Aggregated summary by billing cycle</p>
-        </div>
-        <span class="md-badge md-badge-neutral">{{ statisticsList.length }} Cycles Recorded</span>
-      </div>
-      <div class="md-table-container">
-        <table class="md-table">
-          <thead>
-            <tr>
-              <th>Month / Year</th>
-              <th class="text-right">Income</th>
-              <th class="text-right">Expenses</th>
-              <th class="text-right">Net Savings</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(stat, idx) in statisticsList" :key="idx">
-              <td class="font-semibold">{{ stat.month_year }}</td>
-              <td class="text-right text-income font-medium">{{ formatCurrency(stat.month_income_total, true) }}</td>
-              <td class="text-right text-expense font-medium">{{ formatCurrency(stat.month_expense_total, true) }}</td>
-              <td class="text-right font-semibold" :class="parseNumericValue(stat.month_saving_total) >= 0 ? 'text-income' : 'text-expense'">
-                {{ formatCurrency(stat.month_saving_total, true) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <span class="stat-period">{{ summaryPeriodLabel }}</span>
       </div>
     </div>
 
@@ -247,10 +270,20 @@ export default {
     return {
       currentUser: {},
       statisticsList: [],
-      currentStats: {},
+      currentStats: {
+        month_year: 'Current Month',
+        month_income_total: 0,
+        month_expense_total: 0,
+        month_saving_total: 0,
+      },
       recentTransactions: [],
       loadingTransactions: false,
       loadingStats: false,
+      showSummaryFilter: false,
+      summaryMonth: '',
+      summaryYear: '',
+      appliedSummaryMonth: '',
+      appliedSummaryYear: '',
       showTransactionModal: false,
       showCategoryModal: false,
       selectedTransaction: null,
@@ -259,6 +292,25 @@ export default {
       toastMessage: '',
       toastType: 'success',
     };
+  },
+  computed: {
+    months() {
+      return Array.from({ length: 12 }, (_, index) => ({
+        value: index + 1,
+        label: new Intl.DateTimeFormat('en', { month: 'long' }).format(new Date(2000, index, 1)),
+      }));
+    },
+    maxFilterYear() {
+      return this.currentYear + 1;
+    },
+    currentYear() {
+      return new Date().getFullYear();
+    },
+    summaryPeriodLabel() {
+      if (!this.appliedSummaryMonth && !this.appliedSummaryYear) return 'Current Month';
+      const month = this.months.find((item) => item.value === Number(this.appliedSummaryMonth));
+      return [month?.label, this.appliedSummaryYear].filter(Boolean).join(' ') || 'Current Month';
+    },
   },
   mounted() {
     this.loadUserData();
@@ -285,28 +337,53 @@ export default {
     },
 
     async fetchDashboardData() {
-      await Promise.all([this.fetchStatistics(), this.fetchRecentTransactions()]);
+      await Promise.all([
+        this.fetchStatistics(this.appliedSummaryMonth, this.appliedSummaryYear),
+        this.fetchRecentTransactions(),
+      ]);
     },
 
-    async fetchStatistics() {
+    async fetchStatistics(month, year) {
       this.loadingStats = true;
       try {
-        const res = await transactionService.getStatistics({ page: 1, items_per_page: 12 });
+        const effectiveYear = year || this.currentYear;
+        const res = await transactionService.getStatistics({
+          page: 1,
+          items_per_page: 1,
+          ...(month ? { month } : {}),
+          year: effectiveYear,
+        });
         this.statisticsList = res?.data || [];
-        if (this.statisticsList.length > 0) {
-          this.currentStats = this.statisticsList[0];
-        } else {
-          this.currentStats = {
-            month_year: 'Current Month',
-            month_income_total: 0,
-            month_expense_total: 0,
-            month_saving_total: 0,
-          };
-        }
+        this.currentStats = this.statisticsList[0] || {
+          month_year: 'Current Month',
+          month_income_total: 0,
+          month_expense_total: 0,
+          month_saving_total: 0,
+        };
+        return true;
       } catch (err) {
         console.error('Failed to load statistics', err);
+        return false;
       } finally {
         this.loadingStats = false;
+      }
+    },
+
+    async applySummaryFilter() {
+      const loaded = await this.fetchStatistics(this.summaryMonth, this.summaryYear);
+      if (loaded) {
+        this.appliedSummaryMonth = this.summaryMonth;
+        this.appliedSummaryYear = this.summaryYear || (this.summaryMonth ? this.currentYear : '');
+      }
+    },
+
+    async resetSummaryFilter() {
+      this.summaryMonth = '';
+      this.summaryYear = '';
+      const loaded = await this.fetchStatistics();
+      if (loaded) {
+        this.appliedSummaryMonth = '';
+        this.appliedSummaryYear = '';
       }
     },
 
@@ -432,6 +509,38 @@ export default {
   margin-bottom: 28px;
 }
 
+.summary-filter {
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.filter-heading { flex: 1; }
+.filter-title { margin: 0 0 2px; font-size: 16px; color: var(--md-on-surface); }
+.filter-subtitle { margin: 0; font-size: 13px; color: var(--md-on-surface-variant); }
+.filter-toggle { flex-shrink: 0; }
+.filter-controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--md-outline-variant);
+}
+.filter-field { width: 170px; }
+.filter-field .md-label { margin-bottom: 5px; }
+.filter-field .md-input,
+.filter-field .md-select { height: 42px; padding: 8px 12px; }
+.filter-actions { display: flex; align-items: center; gap: 8px; }
+
 .stat-card {
   padding: 20px;
 }
@@ -527,6 +636,8 @@ export default {
 }
 
 @media (max-width: 860px) {
+  .filter-controls { width: 100%; }
+  .filter-field { flex: 1; min-width: 150px; }
   .stats-grid {
     grid-template-columns: 1fr;
   }

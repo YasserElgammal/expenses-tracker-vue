@@ -41,6 +41,16 @@
             </svg>
             <span>Categories</span>
           </router-link>
+
+          <router-link to="/statistics" class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="20" x2="4" y2="10"/>
+              <line x1="10" y1="20" x2="10" y2="4"/>
+              <line x1="16" y1="20" x2="16" y2="13"/>
+              <line x1="22" y1="20" x2="22" y2="7"/>
+            </svg>
+            <span>Statistics</span>
+          </router-link>
         </nav>
 
         <!-- Right Side Auth / User Controls -->
